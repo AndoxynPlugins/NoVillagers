@@ -1,0 +1,5 @@
+name: NoVillagers
+main: net.daboross.bukkitdev.novillagers.NoVillagers
+version: 1.0
+author: Dabo Ross
+description: Stops villagers from spawning
