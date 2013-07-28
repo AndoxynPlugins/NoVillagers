@@ -16,9 +16,16 @@
  */
 package net.daboross.bukkitdev.novillagers;
 
+import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,22 +35,37 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class NoVillagers extends JavaPlugin implements Listener {
 
-    @Override
-    public void onEnable() {
-        PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(this, this);
-    }
+	@Override
+	public void onEnable() {
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(this, this);
+	}
 
-    @Override
-    public void onDisable() {
-    }
+	@Override
+	public void onDisable() {
+	}
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (cmd.getName().equalsIgnoreCase("")) {
-        } else {
-            sender.sendMessage("NoVillagers doesn't know about the command /" + cmd);
-        }
-        return true;
-    }
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		sender.sendMessage("NoVillagers doesn't know about the command /" + cmd.getName());
+		return true;
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onChunkLoad(ChunkLoadEvent evt) {
+		Chunk chunk = evt.getChunk();
+		Entity[] entities = chunk.getEntities();
+		for (Entity entity : entities) {
+			if (entity.getType() == EntityType.VILLAGER) {
+				entity.remove();
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onSpawn(CreatureSpawnEvent evt) {
+		if (evt.getEntityType() == EntityType.VILLAGER) {
+			evt.setCancelled(true);
+		}
+	}
 }
